@@ -1,55 +1,40 @@
-const fs = require("fs");
-const { promisify } = require("util");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const filePath = () => {
-  const currentDirectory = process.cwd();
-  return path.resolve(currentDirectory, "data", "products.json");
+const p = path.join(
+  path.dirname(process.mainModule.filename),
+  'data',
+  'products.json'
+);
+
+const getProductsFromFile = cb => {
+  fs.readFile(p, (err, fileContent) => {
+    if (err) {
+      cb([]);
+    } else {
+      cb(JSON.parse(fileContent));
+    }
+  });
 };
 
-// TODO: Refactor
 module.exports = class Product {
-  constructor(_title) {
-    this.title = _title;
+  constructor(title, imageUrl, description, price) {
+    this.title = title;
+    this.imageUrl = imageUrl;
+    this.description = description;
+    this.price = price;
   }
+
   save() {
-    const pathToFile = filePath();
-    fs.readFile(pathToFile, "utf8", (err, data) => {
-      if (err) {
-        console.error("Error reading file:", err);
-        return;
-      }
-      // Modify the content (if needed)
-      let updatedContent = JSON.parse(data);
-      updatedContent.push(this);
-      // Append the new content to the file
-      fs.writeFile(
-        pathToFile,
-        JSON.stringify(updatedContent),
-        "utf8",
-        (err) => {
-          if (err) {
-            console.error("Error appending to file:", err);
-            return;
-          }
-          console.log("File appended successfully.");
-        }
-      );
+    getProductsFromFile(products => {
+      products.push(this);
+      fs.writeFile(p, JSON.stringify(products), err => {
+        console.log(err);
+      });
     });
   }
-  static async fetchAll() {
-    try {
-      const pathToFile = filePath();
 
-      const readFileAsync = promisify(fs.readFile);
-      const data = await readFileAsync(pathToFile, "utf8");
-
-      // Modify the content (if needed)
-      const products = JSON.parse(data);
-      return products;
-    } catch (err) {
-      console.error("Error reading file:", err);
-      throw err;
-    }
+  static fetchAll(cb) {
+    getProductsFromFile(cb);
   }
 };
