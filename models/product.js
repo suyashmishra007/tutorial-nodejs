@@ -1,7 +1,7 @@
-const products = [];
 const fs = require("fs");
 const { promisify } = require("util");
 const path = require("path");
+
 const filePath = () => {
   const currentDirectory = process.cwd();
   return path.resolve(currentDirectory, "data", "products.json");
@@ -14,7 +14,6 @@ module.exports = class Product {
   }
   save() {
     const pathToFile = filePath();
-
     fs.readFile(pathToFile, "utf8", (err, data) => {
       if (err) {
         console.error("Error reading file:", err);
@@ -23,7 +22,6 @@ module.exports = class Product {
       // Modify the content (if needed)
       let updatedContent = JSON.parse(data);
       updatedContent.push(this);
-
       // Append the new content to the file
       fs.writeFile(
         pathToFile,
@@ -48,7 +46,6 @@ module.exports = class Product {
 
       // Modify the content (if needed)
       const products = JSON.parse(data);
-      console.log("products", products);
       return products;
     } catch (err) {
       console.error("Error reading file:", err);
