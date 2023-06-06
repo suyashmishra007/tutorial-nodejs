@@ -12,12 +12,12 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
-  const { productId } = req.params;
-  Product.findById(productId, (product) => {
-    res.render("shop/product-detail.ejs", {
-      product,
+  const prodId = req.params.productId;
+  Product.findById(prodId, (product) => {
+    res.render("shop/product-detail", {
+      product: product,
       pageTitle: product.title,
-      path: `/products/${productId}`,
+      path: "/products",
     });
   });
 };
@@ -32,19 +32,45 @@ exports.getIndex = (req, res, next) => {
   });
 };
 
+// ! FIXME : HotFix
 exports.getCart = (req, res, next) => {
-  res.render("shop/cart", {
-    path: "/cart",
-    pageTitle: "Your Cart",
+  Cart.getCart((cart) => {
+    Product.fetchAll((products) => {
+      console.log("Product", products);
+      const cartProducts = [];
+      for (product of products) {
+        const cartProductData = cart.products.find(
+          (prod) => prod.id === product.id
+        );
+        if (cartProductData) {
+          cartProducts.push({ productData: product, qty: cartProductData.qty });
+        }
+      }
+      console.log("cartProducts", cartProducts);
+      res.render("shop/cart", {
+        path: "/cart",
+        pageTitle: "Your Cart",
+        products: cartProducts,
+      });
+    });
   });
 };
 
 exports.postCart = (req, res, next) => {
-  const { productId } = req.body;
-  Product.findById(productId, (product) => {
-    Cart.addProduct(productId, product.price);
+  const prodId = req.body.productId;
+  Product.findById(prodId, (product) => {
+    Cart.addProduct(prodId, product.price);
   });
   res.redirect("/cart");
+};
+
+// ! Hotfix : statuscode 302
+exports.postCartDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.findById(prodId, (product) => {
+    Cart.deleteProduct(prodId, product.price);
+    return res.redirect("/cart");
+  });
 };
 
 exports.getOrders = (req, res, next) => {
