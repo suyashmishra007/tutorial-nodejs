@@ -36,7 +36,6 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = (req, res, next) => {
   Cart.getCart((cart) => {
     Product.fetchAll((products) => {
-      console.log("Product", products);
       const cartProducts = [];
       for (product of products) {
         const cartProductData = cart.products.find(
@@ -46,7 +45,6 @@ exports.getCart = (req, res, next) => {
           cartProducts.push({ productData: product, qty: cartProductData.qty });
         }
       }
-      console.log("cartProducts", cartProducts);
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",

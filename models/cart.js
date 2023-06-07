@@ -36,7 +36,6 @@ module.exports = class Cart {
       }
 
       cart.totalPrice = cart.totalPrice + +productPrice;
-      console.log("Cart", cart);
       await fs.promises.writeFile(p, await JSON.stringify(cart));
     } catch (err) {
       console.log("Error:", err);
