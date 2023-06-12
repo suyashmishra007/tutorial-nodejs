@@ -37,8 +37,10 @@ app.use(
 
 app.use((req, res, next) => {
   if (!req.session.user) {
+    console.log("INSIDE");
     return next();
   }
+  console.log("NOT INSIDE");
   User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
@@ -59,8 +61,8 @@ mongoose
     User.findOne().then((user) => {
       if (!user) {
         const user = new User({
-          name: "Max",
-          email: "max@test.com",
+          name: "Suyash",
+          email: "suyash@gmail.com",
           cart: {
             items: [],
           },
@@ -68,6 +70,7 @@ mongoose
         user.save();
       }
     });
+    console.log("CONNECTED");
     app.listen(3000);
   })
   .catch((err) => {
