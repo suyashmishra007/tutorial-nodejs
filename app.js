@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
-const PORT= 8000;
+const PORT = 3000;
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
@@ -37,10 +37,8 @@ app.use(
 
 app.use((req, res, next) => {
   if (!req.session.user) {
-    console.log("INSIDE");
     return next();
   }
-  console.log("NOT INSIDE");
   User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
@@ -58,20 +56,9 @@ app.use(errorController.get404);
 mongoose
   .connect(MONGODB_URI)
   .then((result) => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const user = new User({
-          name: "Suyash",
-          email: "suyash@gmail.com",
-          cart: {
-            items: [],
-          },
-        });
-        user.save();
-      }
+    app.listen(PORT, () => {
+      console.log(`listening on http://localhost:${PORT}`);
     });
-    console.log("CONNECTED");
-    app.listen(PORT);
   })
   .catch((err) => {
     console.log(err);
