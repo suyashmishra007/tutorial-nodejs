@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
-
+const PORT= 8000;
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
@@ -71,7 +71,7 @@ mongoose
       }
     });
     console.log("CONNECTED");
-    app.listen(3000);
+    app.listen(PORT);
   })
   .catch((err) => {
     console.log(err);
