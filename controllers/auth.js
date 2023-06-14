@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const SALT = 12;
+
 exports.getLogin = (req, res, next) => {
   res.render("auth/login", {
     path: "/login",

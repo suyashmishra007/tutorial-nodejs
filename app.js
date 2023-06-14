@@ -8,7 +8,6 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const PORT = 3000;
 const errorController = require("./controllers/error");
 const User = require("./models/user");
-
 const MONGODB_URI = "mongodb://0.0.0.0:27017/shop";
 
 const app = express();
