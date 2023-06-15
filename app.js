@@ -1,15 +1,15 @@
 const path = require("path");
-
+const mongoose = require("mongoose");
+const PORT = 3000;
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
-const PORT = 3000;
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 const MONGODB_URI = "mongodb://0.0.0.0:27017/shop";
 const flash = require("connect-flash");
+// const connectDB = require("./util/db");
 const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
@@ -66,8 +66,9 @@ app.use(authRoutes);
 
 app.use(errorController.get404);
 
+// connectDB();
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, { useUnifiedTopology: true, useNewUrlParser: true })
   .then((result) => {
     app.listen(PORT, () => {
       console.log(`listening on http://localhost:${PORT}`);
