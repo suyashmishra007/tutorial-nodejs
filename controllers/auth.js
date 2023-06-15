@@ -3,18 +3,25 @@ const bcrypt = require("bcryptjs");
 const SALT = 12;
 
 exports.getLogin = (req, res, next) => {
+  let message = req.flash("error");
+  message = message.length > 0 ? message[0] : null;
+
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
     isAuthenticated: false,
+    errorMessage: message,
   });
 };
 
 exports.getSignup = (req, res, next) => {
+  let message = req.flash("error");
+  message = message.length > 0 ? message[0] : null;
   res.render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
     isAuthenticated: false,
+    errorMessage: message,
   });
 };
 
@@ -24,6 +31,7 @@ exports.postLogin = (req, res, next) => {
     .then((user) => {
       if (!user) {
         // user not found
+        req.flash("error", "Invalid email or password");
         return res.redirect("/login");
       }
 
@@ -38,6 +46,7 @@ exports.postLogin = (req, res, next) => {
               res.redirect("/");
             });
           }
+          req.flash("error", "Invalid email or password");
           res.redirect("/login");
         })
         .catch((err) => {
@@ -55,6 +64,7 @@ exports.postSignup = (req, res, next) => {
     .then((user) => {
       if (user) {
         // if user exits
+        req.flash("error", "Email already in use");
         return res.redirect("/signup");
       }
       return bcrypt

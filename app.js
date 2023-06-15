@@ -9,7 +9,7 @@ const PORT = 3000;
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 const MONGODB_URI = "mongodb://0.0.0.0:27017/shop";
-
+const flash = require("connect-flash");
 const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
@@ -34,6 +34,9 @@ app.use(
   })
 );
 
+// app.use(csrfProtection);
+app.use(flash());
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -46,7 +49,18 @@ app.use((req, res, next) => {
     .catch((err) => console.log(err));
 });
 
+// ! Not using csrf token
+// app.use((req, res, next) => {
+//   (res.locals.isAuthenticated = req.session.isLoggedIn),
+//     (res.locals.csrfToken = req.csrfToken());
+//   next();
+// });
+
 app.use("/admin", adminRoutes);
+// app.use((req, res, next) => {
+//   req.locals.isAuthenticated = req.session.isLoggedIn;
+//   next();
+// });
 app.use(shopRoutes);
 app.use(authRoutes);
 
