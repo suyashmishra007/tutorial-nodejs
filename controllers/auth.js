@@ -93,14 +93,14 @@ exports.postLogout = (req, res, next) => {
   });
 };
 
-exports.getReset = (req, res, next) => {
-  let message = req.flash("error");
-  message = message.length > 0 ? message[0] : null;
+// exports.getReset = (req, res, next) => {
+//   let message = req.flash("error");
+//   message = message.length > 0 ? message[0] : null;
 
-  res.render("auth/reset", {
-    path: "/reset",
-    pageTitle: "Reset Password",
-    isAuthenticated: false,
-    errorMessage: message,
-  });
-};
+//   res.render("auth/reset", {
+//     path: "/reset",
+//     pageTitle: "Reset Password",
+//     isAuthenticated: false,
+//     errorMessage: message,
+//   });
+// };
