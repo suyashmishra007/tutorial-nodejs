@@ -56,15 +56,15 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
+  console.log("EDIT");
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
-
   Product.findById(prodId)
-    .then((product) => {
-      if (product.id.toString() !== req.user._id.toString()) {
+  .then((product) => {
+      if (product.userId.toString() !== req.user._id.toString()) {
         return res.redirect("/");
       }
       product.title = updatedTitle;
