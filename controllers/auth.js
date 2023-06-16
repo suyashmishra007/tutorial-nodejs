@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const SALT = 12;
+const {validationResult } = require('express-validator');
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
@@ -59,6 +60,15 @@ exports.postLogin = (req, res, next) => {
 
 exports.postSignup = (req, res, next) => {
   const { email, password, confirmPassword } = req.body;
+  const errors = validationResult(req);
+  if(errors){
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      isAuthenticated: false,
+      errorMessage: "Invalid Credentials !!",
+    });
+  }
   User.findOne({ email })
     .then((user) => {
       if (user) {
