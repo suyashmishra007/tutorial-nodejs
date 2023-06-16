@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const SALT = 12;
-const {validationResult } = require('express-validator');
+const { validationResult } = require("express-validator");
 
 exports.getLogin = (req, res, next) => {
   let message = req.flash("error");
@@ -18,11 +18,16 @@ exports.getLogin = (req, res, next) => {
 exports.getSignup = (req, res, next) => {
   let message = req.flash("error");
   message = message.length > 0 ? message[0] : null;
-  res.render("auth/signup", {
+  res.status(422).render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
     isAuthenticated: false,
     errorMessage: message,
+    oldInput: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
   });
 };
 
@@ -61,39 +66,39 @@ exports.postLogin = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const { email, password, confirmPassword } = req.body;
   const errors = validationResult(req);
-  if(errors){
+
+  const isError =
+    errors.errors.length > 0 ? "Please enter valid credentials" : null;
+
+  if (isError) {
     return res.status(422).render("auth/signup", {
       path: "/signup",
       pageTitle: "Signup",
       isAuthenticated: false,
-      errorMessage: "Invalid Credentials !!",
+      errorMessage: isError,
+      oldInput: {
+        email,
+        password,
+        confirmPassword,
+      },
     });
   }
-  User.findOne({ email })
-    .then((user) => {
-      if (user) {
-        // if user exits
-        req.flash("error", "Email already in use");
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, SALT)
-        .then((hashPassword) => {
-          // create a new user
-          const newUser = new User({
-            email,
-            password: hashPassword,
-            cart: { items: [] },
-          });
-          return newUser.save();
-        })
-        .then((result) => {
-          res.redirect("/login");
-        });
+
+  bcrypt
+    .hash(password, SALT)
+    .then((hashPassword) => {
+      // create a new user
+      const newUser = new User({
+        email,
+        password: hashPassword,
+        cart: { items: [] },
+      });
+      return newUser.save();
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then((result) => {
+      res.redirect("/login");
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.postLogout = (req, res, next) => {
